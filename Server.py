@@ -1,6 +1,10 @@
-# server.py
-
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
+from io import BytesIO
+import win32gui
+import win32ui
+import win32con
+import win32api
+from PIL import Image
 from AppManager import AppManager
 #from AudioDeviceManager import AudioDeviceManager
 
@@ -82,6 +86,18 @@ class Server:
         #         return jsonify({'message': 'Default device set', 'device_id': device_id})
         #     else:
         #         return jsonify({'error': 'Invalid device data'}), 400
+        
+        @self.app.route('/applications/<process_name>/icon', methods=['GET'])
+        def get_app_icon(process_name):
+            controller = self.app_manager.get_controller(process_name)
+            if not controller:
+                return jsonify({'error': 'Application not found'}), 404
+
+            icon = controller.extract_icon()
+            if icon:
+                return send_file(icon, mimetype='image/png')
+            else:
+                return jsonify({'error': 'Icon not found'}), 404
 
     def run(self):
         self.app.run(host='0.0.0.0', port=5000)

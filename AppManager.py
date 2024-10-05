@@ -1,5 +1,3 @@
-# app_manager.py
-
 from pycaw.pycaw import AudioUtilities
 from AudioController import AudioController
 
