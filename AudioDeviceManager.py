@@ -1,11 +1,11 @@
-#to do later: issue -> need to figure out how to swtich audio device hint: https://github.com/KillerBOSS2019/TouchPortal-Windows-MediaMixer/blob/main/src/audioUtil/policyconfig.py
+#à faire: pb -> trouver comment changer de source audio voir: https://github.com/KillerBOSS2019/TouchPortal-Windows-MediaMixer/blob/main/src/audioUtil/policyconfig.py
 
 
-from pycaw.pycaw import AudioUtilities, MMDeviceEnumerator, EDataFlow, ERole
+from pycaw.pycaw import AudioUtilities, IMMDeviceEnumerator, EDataFlow, ERole
 
 class AudioDeviceManager:
     def __init__(self):
-        self.enumerator = MMDeviceEnumerator()
+        self.enumerator = IMMDeviceEnumerator()
         self.devices = self.get_audio_devices()
         self.default_device = self.get_default_audio_device()
 
