@@ -1,4 +1,5 @@
-from pycaw.pycaw import AudioUtilities
+from pycaw.pycaw import AudioUtilities, ISimpleAudioVolume
+from comtypes import CLSCTX_ALL
 import win32gui
 import win32ui
 import win32con
@@ -88,3 +89,12 @@ class AudioController:
             if session.Process and session.Process.name() == self.process_name:
                 return session.Process.exe()
         return None
+    
+    def is_muted(self):
+        sessions = AudioUtilities.GetAllSessions()
+        for session in sessions:
+            if session.Process and session.Process.name() == self.process_name:
+                volume = session._ctl.QueryInterface(ISimpleAudioVolume)
+                is_muted = volume.GetMute()
+                return bool(is_muted)
+        return False

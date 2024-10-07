@@ -34,7 +34,7 @@ class Server:
                 return jsonify({'error': 'Application not found'}), 404
 
             if request.method == 'GET':
-                volume = controller.get_volume()
+                volume = controller.get_process_volume()
                 if volume is not None:
                     return jsonify({'volume': volume * 100})
                 else:
@@ -65,6 +65,15 @@ class Server:
                 return jsonify({'message': f'{process_name} unmuted'})
             else:
                 return jsonify({'error': 'Invalid action'}), 400
+            
+        @self.app.route('/applications/<process_name>/mute_status', methods=['GET'])
+        def get_mute_status(process_name):
+            controller = self.app_manager.get_controller(process_name)
+            if not controller:
+                return jsonify({'error': 'Application not found'}), 404
+
+            is_muted = controller.is_muted()
+            return jsonify({'muted': is_muted}), 200
 
         # @self.app.route('/devices', methods=['GET'])
         # def get_devices():
