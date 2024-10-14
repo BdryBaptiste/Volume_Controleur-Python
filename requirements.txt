@@ -3,4 +3,6 @@ psutil==5.9.0
 Flask 
 pywin32 
 pycaw
-pywin32 Pillow
+pywin32 
+Pillow
+comtypes

@@ -1,18 +1,12 @@
 from flask import Flask, request, jsonify, send_file
-from io import BytesIO
-import win32gui
-import win32ui
-import win32con
-import win32api
-from PIL import Image
 from AppManager import AppManager
-#from AudioDeviceManager import AudioDeviceManager
+from AudioDeviceManager import AudioDeviceManager
 
 class Server:
     def __init__(self):
         self.app = Flask(__name__)
         self.app_manager = AppManager()
-        #self.audio_device_manager = AudioDeviceManager()
+        self.audio_device_manager = AudioDeviceManager()
 
         # Mettre à jour les applications au démarrage
         self.app_manager.update_applications()
@@ -75,26 +69,25 @@ class Server:
             is_muted = controller.is_muted()
             return jsonify({'muted': is_muted}), 200
 
-        # @self.app.route('/devices', methods=['GET'])
-        # def get_devices():
-        #     devices = self.audio_device_manager.get_audio_devices()
-        #     return jsonify({'devices': devices})
+        @self.app.route('/devices', methods=['GET'])
+        def get_devices():
+            devices = self.audio_device_manager.get_audio_devices()
+            return jsonify({'devices': devices})
 
-        # @self.app.route('/devices/default', methods=['GET'])
-        # def get_default_device():
-        #     device = self.audio_device_manager.get_default_audio_device()
-        #     return jsonify({'default_device': device})
+        @self.app.route('/devices/default', methods=['GET'])
+        def get_default_device():
+            device = self.audio_device_manager.get_default_audio_device()
+            return jsonify({'default_device': device})
 
-        #Pas prêt
-        # @self.app.route('/devices/default', methods=['POST'])
-        # def set_default_device():
-        #     data = request.get_json()
-        #     device_id = data.get('device_id')
-        #     if device_id:
-        #         self.audio_device_manager.set_default_audio_device(device_id)
-        #         return jsonify({'message': 'Default device set', 'device_id': device_id})
-        #     else:
-        #         return jsonify({'error': 'Invalid device data'}), 400
+        @self.app.route('/devices/default', methods=['POST'])
+        def set_default_device():
+            data = request.get_json()
+            device_id = data.get('device_id')
+            if device_id:
+                self.audio_device_manager.set_default_audio_device(device_id)
+                return jsonify({'message': 'Default device set', 'device_id': device_id})
+            else:
+                return jsonify({'error': 'Invalid device data'}), 400
         
         @self.app.route('/applications/<process_name>/icon', methods=['GET'])
         def get_app_icon(process_name):
