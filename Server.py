@@ -72,17 +72,20 @@ class Server:
         @self.app.route('/devices', methods=['GET'])
         def get_devices():
             devices = self.audio_device_manager.get_audio_devices()
+
+            for device in devices:
+                print(device)
+
             return jsonify({'devices': devices})
 
         @self.app.route('/devices/default', methods=['GET'])
         def get_default_device():
             device = self.audio_device_manager.get_default_audio_device()
+            print(device)
             return jsonify({'default_device': device})
 
-        @self.app.route('/devices/default', methods=['POST'])
-        def set_default_device():
-            data = request.get_json()
-            device_id = data.get('device_id')
+        @self.app.route('/devices/default/<device_id>/', methods=['POST'])
+        def set_default_device(device_id):
             if device_id:
                 self.audio_device_manager.set_default_audio_device(device_id)
                 return jsonify({'message': 'Default device set', 'device_id': device_id})

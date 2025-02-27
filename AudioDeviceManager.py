@@ -1,14 +1,12 @@
-#à faire: pb -> trouver comment changer de source audio voir: https://github.com/KillerBOSS2019/TouchPortal-Windows-MediaMixer/blob/main/src/audioUtil/policyconfig.py
-
-
 from comtypes import CLSCTX_INPROC_SERVER
 import comtypes
 from comtypes import CLSCTX_ALL
 from pycaw.pycaw import IMMDeviceEnumerator, AudioUtilities
 from pycaw.constants import CLSID_MMDeviceEnumerator, DEVICE_STATE, EDataFlow, ERole, STGM
 from pycaw.utils import AudioDevice
+from ctypes import c_wchar_p
 
-
+import policyconfig
 
 class AudioDeviceManager:
     def __init__(self):
@@ -47,5 +45,28 @@ class AudioDeviceManager:
             'name': device.FriendlyName
         }
 
-    def set_default_audio_device(self, device_id):
-        print("Setting default audio device is not supported via Pycaw.")
+    def set_default_audio_device(self, device_id, role=1):
+        try:
+            policy_config = comtypes.CoCreateInstance(
+                policyconfig.CLSID_PolicyConfigClient,
+                policyconfig.IPolicyConfig,
+                CLSCTX_ALL
+            )
+            if policy_config is None:
+                raise RuntimeError("Impossible d'initialiser PolicyConfigClient.")
+
+            # Convertir device_id en LPCWSTR
+            device_id_wstr = c_wchar_p(device_id)
+
+            # Appel de la méthode COM
+            result = policy_config.SetDefaultEndpoint(device_id_wstr, role)
+
+            if result != 0:
+                raise RuntimeError(f"Erreur lors du changement de périphérique: {result}")
+
+            print(f"Périphérique audio changé : {device_id}")
+            return True
+
+        except Exception as e:
+            print(f"Erreur : {e}")
+            return False
